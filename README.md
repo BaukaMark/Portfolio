@@ -23,17 +23,26 @@ Passionate about uncovering insights from data through storytelling, clean visua
 
 ---
 
-##  Projects
+### University Analysis Dashboard (Power BI)
 
-###  Sales Analysis Dashboard (Power BI)  
 📄 `Bauyrzhan.pbix`  
-An interactive dashboard analyzing retail sales data:  
-- Sales trends by category, region, and channel  
-- Dynamic filters by product, year, and location  
-- Key metrics: revenue, profit, units sold
+An interactive dashboard designed to analyze the financial and demographic aspects of a university.
 
-🛠 Tools used: Power BI, DAX, Excel preprocessing  
-📷 Screenshots available in `/screenshots` folder
+#### Features:
+- Analysis of **income** sources (e.g., tuition, grants, sponsorships)
+- Breakdown of **expenses** (e.g., salaries, infrastructure, resources)
+- Overview of **student and faculty** numbers and trends
+- Clean visual segmentation by category
+- Basic navigation via Power BI buttons
+
+#### Tools Used:
+- Power BI (data modeling, DAX measures, bookmarks)
+- Excel (preprocessing)
+- Custom icons for UI/UX
+
+#### Screenshots:
+![University Dashboard Overview](screenshots/Screenshot%202025-07-10%20162551.png)
+(you can rename it to `university-overview.png` for clarity)
 
 > See file: [`Bauyrzhan.pbix`](./Bauyrzhan.pbix)
 
