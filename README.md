@@ -40,9 +40,7 @@ An interactive dashboard designed to analyze the financial and demographic aspec
 - Excel (preprocessing)
 - Custom icons for UI/UX
 
-#### Screenshots:
-![University Dashboard Overview](screenshots/Screenshot%202025-07-10%20162551.png)
-(you can rename it to `university-overview.png` for clarity)
+
 
 > See file: [`Bauyrzhan.pbix`](./Bauyrzhan.pbix)
 
