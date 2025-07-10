@@ -3,7 +3,7 @@
  Almaty, Kazakhstan  
  ## Contact
 - [LinkedIn](https://linkedin.com/in/bauyrzhan-maraiym-63bbb3344)  
-- [bauyrzanmarajym@gmail.com](email:bauyrzanmarajym@gmail.com)
+- [bauyrzanmarajym@gmail.com](mailto:bauyrzanmarajym@gmail.com)
 ---
 
 ##  About Me
