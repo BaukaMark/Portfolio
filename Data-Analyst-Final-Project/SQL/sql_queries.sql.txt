@@ -1,0 +1,120 @@
+1 ________________________________
+
+WITH parsed_transactions AS (
+    SELECT 
+        strftime('%Y-%m', date(substr(date_new, 7, 4) || '-' || substr(date_new, 4, 2) || '-' || substr(date_new, 1, 2))) AS year_month,
+        Sum_payment
+    FROM transactions
+    WHERE date(substr(date_new, 7, 4) || '-' || substr(date_new, 4, 2) || '-' || substr(date_new, 1, 2))
+          BETWEEN '2015-06-01' AND '2016-06-01'
+),
+totals AS (
+    SELECT 
+        COUNT(*) AS total_operations,
+        SUM(Sum_payment) AS total_amount
+    FROM parsed_transactions
+)
+
+SELECT 
+    p.year_month,
+    COUNT(*) AS operations_in_month,
+    ROUND(COUNT(*) * 100.0 / t.total_operations, 2) AS percent_of_operations,
+    ROUND(SUM(p.Sum_payment), 2) AS amount_in_month,
+    ROUND(SUM(p.Sum_payment) * 100.0 / t.total_amount, 2) AS percent_of_amount
+FROM parsed_transactions p, totals t
+GROUP BY p.year_month
+ORDER BY p.year_month;
+
+2 ____________________________________________
+
+WITH parsed_transactions AS (
+    SELECT 
+        t.ID_client,
+        strftime('%Y-%m', date(substr(t.date_new, 7, 4) || '-' || substr(t.date_new, 4, 2) || '-' || substr(t.date_new, 1, 2))) AS year_month,
+        t.Sum_payment,
+        c.Gender
+    FROM transactions t
+    JOIN customer c ON t.ID_client = c.ID_client
+    WHERE date(substr(t.date_new, 7, 4) || '-' || substr(t.date_new, 4, 2) || '-' || substr(t.date_new, 1, 2))
+          BETWEEN '2015-06-01' AND '2016-06-01'
+),
+monthly_totals AS (
+    SELECT 
+        year_month,
+        COUNT(*) AS total_operations,
+        SUM(Sum_payment) AS total_sum
+    FROM parsed_transactions
+    GROUP BY year_month
+)
+
+SELECT 
+    p.year_month,
+    p.Gender,
+    COUNT(*) AS operations_by_gender,
+    ROUND(COUNT(*) * 100.0 / mt.total_operations, 2) AS percent_operations,
+    ROUND(SUM(p.Sum_payment), 2) AS amount_by_gender,
+    ROUND(SUM(p.Sum_payment) * 100.0 / mt.total_sum, 2) AS percent_amount
+FROM parsed_transactions p
+JOIN monthly_totals mt ON p.year_month = mt.year_month
+GROUP BY p.year_month, p.Gender
+ORDER BY p.year_month, p.Gender;
+
+3_________________________________________________
+
+-- Analyze client transactions by age groups (based on 'Age' column)
+-- Part 1: Total number of transactions and total spend per group
+-- Part 2: Quarterly average spend and share of total spend
+
+WITH parsed_data AS (
+    SELECT 
+        t.ID_client,
+        c.Age,
+        strftime('%Y-%m', date(substr(t.date_new, 7, 4) || '-' || substr(t.date_new, 4, 2) || '-' || substr(t.date_new, 1, 2))) AS year_month,
+        strftime('%m', date(substr(t.date_new, 7, 4) || '-' || substr(t.date_new, 4, 2) || '-' || substr(t.date_new, 1, 2))) AS month_val,
+        t.Sum_payment,
+        CASE 
+            WHEN c.Age IS NULL THEN 'NA'
+            WHEN c.Age < 10 THEN '0-9'
+            WHEN c.Age < 20 THEN '10-19'
+            WHEN c.Age < 30 THEN '20-29'
+            WHEN c.Age < 40 THEN '30-39'
+            WHEN c.Age < 50 THEN '40-49'
+            WHEN c.Age < 60 THEN '50-59'
+            WHEN c.Age < 70 THEN '60-69'
+            ELSE '70+'
+        END AS age_group
+    FROM transactions t
+    JOIN customer c ON t.ID_client = c.ID_client
+    WHERE date(substr(t.date_new, 7, 4) || '-' || substr(t.date_new, 4, 2) || '-' || substr(t.date_new, 1, 2))
+          BETWEEN '2015-06-01' AND '2016-06-01'
+),
+quarter_data AS (
+    SELECT *,
+        CASE 
+            WHEN month_val IN ('01','02','03') THEN 'Q1'
+            WHEN month_val IN ('04','05','06') THEN 'Q2'
+            WHEN month_val IN ('07','08','09') THEN 'Q3'
+            ELSE 'Q4'
+        END AS quarter
+    FROM parsed_data
+)
+
+-- part 1
+SELECT 
+    age_group,
+    COUNT(*) AS total_operations,
+    ROUND(SUM(Sum_payment), 2) AS total_amount
+FROM quarter_data
+GROUP BY age_group
+
+UNION ALL
+
+-- part 2
+SELECT 
+    age_group || ' - ' || quarter AS age_quarter,
+    ROUND(AVG(Sum_payment), 2) AS avg_payment,
+    ROUND(SUM(Sum_payment) * 100.0 / (SELECT SUM(Sum_payment) FROM quarter_data), 2) AS percent_of_total
+FROM quarter_data
+GROUP BY age_group, quarter
+ORDER BY age_quarter;
+
